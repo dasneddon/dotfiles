@@ -142,7 +142,7 @@ source "$OSH"/oh-my-bash.sh
 # alias ohmybash="mate ~/.oh-my-bash"
 fastfetch
 alias clr="clear && source .bashrc"
-eval $(dircolors dircolors.txt)
+eval "$(dircolors "$HOME/.dircolors")"
 
 
 # Dotfiles Git repository
