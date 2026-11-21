@@ -4,7 +4,7 @@ case $- in
     *) return;;
 esac
 
-OSH_CUSTOM="$HOME/.oh-my-bash-custom"
+OSH_CUSTOM="$HOME/.oh-my-bash/custom"
 # Path to your oh-my-bash installation.
 export OSH="$HOME/.oh-my-bash"
 export PATH=$PATH:~/.cargo/bin
@@ -142,9 +142,25 @@ source "$OSH"/oh-my-bash.sh
 # alias ohmybash="mate ~/.oh-my-bash"
 fastfetch
 alias clr="clear && source .bashrc"
-eval "$(dircolors "$HOME/.dircolors")"
+if command -v dircolors >/dev/null 2>&1; then
+    COLORS=dircolors
+elif command -v gdircolors >/dev/null 2>&1; then
+    COLORS=gdircolors
+fi
 
+if [[ -n "${COLORS:-}" ]]; then
+    if [[ -f "$HOME/.dircolors" ]]; then
+        eval "$("$COLORS" -b "$HOME/.dircolors")"
+    else
+        eval "$("$COLORS" -b)"
+    fi
+fi
 
+if [[ "$(uname)" == "Darwin" ]]; then
+    alias ls='ls -G'
+else
+    alias ls='ls --color=auto'
+fi
 # Dotfiles Git repository
 dotfiles() {
     git --git-dir="$HOME/.dotfiles" --work-tree="$HOME" "$@"
