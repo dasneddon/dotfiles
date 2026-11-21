@@ -1,5 +1,14 @@
 # .bash_profile -*- mode: sh -*-
 if [[ "$(uname)" == "Darwin" ]]; then
+    # Synchronize dotfiles on interactive login
+case $- in
+    *i*)
+        if [ -x "$HOME/dotfiles/scripts/sync-dotfiles.sh" ]; then
+            "$HOME/dotfiles/scripts/sync-dotfiles.sh" ||
+                echo "Dotfiles synchronization failed" >&2
+        fi
+        ;;
+esac
 # Load login settings and environment variables
 if [[ -f ~/.profile ]]; then
   source ~/.profile

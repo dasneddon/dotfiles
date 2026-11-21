@@ -7,7 +7,15 @@
 # the default umask is set in /etc/profile; for setting the umask
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
-
+# Synchronize dotfiles on interactive login
+case $- in
+    *i*)
+        if [ -x "$HOME/dotfiles/scripts/sync-dotfiles.sh" ]; then
+            "$HOME/dotfiles/scripts/sync-dotfiles.sh" ||
+                echo "Dotfiles synchronization failed" >&2
+        fi
+        ;;
+esac
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
