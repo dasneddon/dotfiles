@@ -6,7 +6,7 @@ esac
 
 OSH_CUSTOM="$HOME/.oh-my-bash-custom"
 # Path to your oh-my-bash installation.
-export OSH='/home/dsneddon/.oh-my-bash'
+export OSH="$HOME/.oh-my-bash"
 export PATH=$PATH:~/.cargo/bin
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-bash is loaded.
