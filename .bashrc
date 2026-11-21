@@ -4,7 +4,7 @@ case $- in
     *) return;;
 esac
 
-OSH_CUSTOM="$HOME/.oh-my-bash/custom"
+OSH_CUSTOM="$HOME/.oh-my-bash-custom"
 # Path to your oh-my-bash installation.
 export OSH="$HOME/.oh-my-bash"
 export PATH=$PATH:~/.cargo/bin
