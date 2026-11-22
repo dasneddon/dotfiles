@@ -140,7 +140,7 @@ source "$OSH"/oh-my-bash.sh
 # Example aliases
 # alias bashconfig="mate ~/.bashrc"
 # alias ohmybash="mate ~/.oh-my-bash"
-fastfetch
+command -v fastfetch >/dev/null 2>&1 && fastfetch
 alias clr="clear && source .bashrc"
 if command -v dircolors >/dev/null 2>&1; then
     COLORS=dircolors

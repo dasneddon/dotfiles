@@ -1,16 +1,7 @@
 # .bash_profile -*- mode: sh -*-
 if [[ "$(uname)" == "Darwin" ]]; then
-    # Synchronize dotfiles on interactive login
-# Load login settings and environment variables
-if [[ -f ~/.profile ]]; then
-  source ~/.profile
-fi
 if [[ -x /opt/homebrew/bin/brew ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
-# Load interactive settings
-if [[ -f ~/.bashrc ]]; then
-  source ~/.bashrc
 fi
 
 # >>> conda initialize >>>
@@ -34,4 +25,8 @@ export PATH="$HOME/.local/bin:$PATH"
 
 export ANT_HOME="$HOME/.local/ant"
 export PATH="$HOME/.local/bin:$ANT_HOME/bin:$PATH"
+fi
+# Load common configuration on both Linux and macOS
+if [[ -f "$HOME/.profile" ]]; then
+    source "$HOME/.profile"
 fi
