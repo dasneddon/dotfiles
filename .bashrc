@@ -168,6 +168,15 @@ dotfiles() {
 
 if command -v apt-get >/dev/null 2>&1; then
     alias update="sudo apt-get update && sudo apt-get upgrade -y"
+    alias install="sudo apt-get install"
+    echo "Package manager recognized as APT (Debian based)"
 elif command -v pacman >/dev/null 2>&1; then
-    alias update="sudo pacman -Syu"
+    alias update="sudo pacman -Syu && yay -Sua"
+    alias install="sudo pacman -S"
+    echo "Package manager recognized as Pacman and Yay (Arch based)"
+elif command -v brew >/dev/null 2>&1; then
+    alias update="brew update && brew upgrade"
+    echo "Package manager recognized as Homebrew (Mac)"
+else
+    echo "Bash does not recognise this OS's package manager, update dotfiles"
 fi
