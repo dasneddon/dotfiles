@@ -13,11 +13,9 @@ if ! git -C "$REPO" rev-parse --is-inside-work-tree \
 fi
 
 # Pull latest changes without interactive authentication
-echo "Updating dotfiles..."
 GIT_TERMINAL_PROMPT=0 git -C "$REPO" pull --ff-only
 
 # Force-overwrite existing configuration files
-echo "Copying dotfiles..."
 
 rsync -aI \
     --exclude='/.git/' \
@@ -28,4 +26,3 @@ rsync -aI \
     --exclude='/.gitignore' \
     "$REPO/" "$DEST/"
 
-echo "Dotfiles synchronized."
