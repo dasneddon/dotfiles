@@ -182,6 +182,22 @@ elif command -v pacman >/dev/null 2>&1; then
 elif command -v brew >/dev/null 2>&1; then
     alias update="brew update && brew upgrade"
     echo "Package manager recognized as Homebrew (Mac)"
+elif command -v zypper >/dev/null 2>&1; then
+    . /etc/os-release
+    alias install="sudo zypper install"
+    case "$ID" in
+        opensuse-tumbleweed)
+            alias update="sudo zypper dup"
+            echo "Package manager recognized as Zypper (openSUSE Tumbleweed)"
+            ;;
+        opensuse-leap)
+            alias update="sudo zypper ref && sudo zypper up"
+            echo "Package manager recognizzed as Zypper (openSUSE Leap)"
+            ;;
+        *)
+            echo "Package manager recognized as Zypper (Unsupported Distro - Update Dotfiles)"
+            ;;
+    esac
 else
     echo "Bash does not recognise this OS's package manager, update dotfiles"
 fi
