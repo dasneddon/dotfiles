@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+if [[ ! -f "${OSH:-$HOME/.oh-my-bash}/oh-my-bash.sh" ]]; then
+	git -C "$HOME/dotfiles" submodule update --init --recursive
+	cp -r ../oh-my-bash $HOME/.oh-my-bash
+	echo "Installed Oh My Bash"
+fi
+
 set -euo pipefail
 
 REPO="$HOME/dotfiles"
