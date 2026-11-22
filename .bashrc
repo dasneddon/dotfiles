@@ -168,4 +168,6 @@ dotfiles() {
 
 if command -v apt-get >/dev/null 2>&1; then
     alias update="sudo apt-get update && sudo apt-get upgrade -y"
+elif command -v pacman >/dev/null 2>&1; then
+    alias update="sudo pacman -Syu"
 fi
