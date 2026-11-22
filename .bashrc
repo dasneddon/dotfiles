@@ -1,3 +1,8 @@
+# Prevent duplicate initialization within the same Bash process
+if [[ -n ${_BASHRC_LOADED:-} ]]; then
+    return 0
+fi
+_BASHRC_LOADED=1
 # Enable the subsequent settings only in interactive sessions
 case $- in
   *i*) ;;
