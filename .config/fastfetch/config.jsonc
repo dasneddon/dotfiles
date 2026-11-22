@@ -4,6 +4,7 @@
     "title",
     "separator",
     "os",
+    "host",
     "kernel",
     "uptime",
     "loadavg",
@@ -27,6 +28,7 @@
     "battery",
     "poweradapter",
     "localip",
+    "dns",
     "locale",
     "break",
     "colors"
