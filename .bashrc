@@ -101,10 +101,10 @@ if command -v apt-get >/dev/null 2>&1; then
 elif command -v pacman >/dev/null 2>&1; then
     if command -v yay >/dev/null 2>&1; then
         alias update="sudo pacman -Syu && yay -Sua"
-       echo "Package managers recognized as $(colorword 34 "Arch Linux") based $(colorword '1;34' "Pacman and Yay")." 
+       echo "Package managers recognized as $(colorword '38;2;23;147;209' "Arch Linux") based $(colorword '1;34' "Pacman and Yay")." 
     else
         alias update="sudo pacman -Syu"
-        echo "Package manager recognized as $(colorword 34 "Arch Linux") based $(colorword '1;34' "Pa    cman")."
+        echo "Package manager recognized as $(colorword '38;2;23;147;209' "Arch Linux") based $(colorword '1;34' "Pa    cman")."
     fi
     alias install="sudo pacman -S"
 elif command -v brew >/dev/null 2>&1; then
