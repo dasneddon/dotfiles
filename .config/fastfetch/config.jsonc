@@ -3,6 +3,7 @@
   "modules": [
     "title",
     "separator",
+    "chassis",
     "os",
     "kernel",
     "uptime",
@@ -27,6 +28,7 @@
     "battery",
     "poweradapter",
     "localip",
+    "publicip",
     "dns",
     "locale",
     "break",
