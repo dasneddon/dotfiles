@@ -1,2 +1,30 @@
-#Old Versions
+# Credentials and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.pfx
+*.key
+*.kdbx
+*.secret
+.secrets
+credentials.json
+
+# SSH private keys and configuration
+.ssh/
+id_rsa
+id_ed25519
+id_ecdsa
+
+# Authentication
+.netrc
+.git-credentials
+.authinfo
+
+# Backups and temporary files
 *.old
+*.bak
+*.swp
+*.swo
+*~
