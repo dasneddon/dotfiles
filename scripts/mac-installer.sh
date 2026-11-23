@@ -93,7 +93,7 @@ else
     echo "Homebrew Bash is already the default shell."
 fi
 
-bash "$REPO/scripts/sync-dotfiles.sh"
+bash "$REPO/sync-dotfiles.sh"
 
 echo
 echo "=== Installation complete ==="

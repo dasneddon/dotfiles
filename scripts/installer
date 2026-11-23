@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+# Detect package manager
+if command -v apt-get &>/dev/null; then
+    PKG_MANAGER="apt"
+elif command -v dnf &>/dev/null; then
+    PKG_MANAGER="dnf"
+elif command -v zypper &>/dev/null; then
+    PKG_MANAGER="zypper"
+elif command -v pacman &>/dev/null; then
+    PKG_MANAGER="pacman"
+elif command -v brew &>/dev/null; then
+    PKG_MANAGER="brew"
+elif command -v apk &>/dev/null; then
+    PKG_MANAGER="apk"
+else
+    echo "Unsupported package manager" >&2
+    exit 1
+fi
+
+# Install packages
+case "$PKG_MANAGER" in
+    apt)
+        sudo apt-get update
+        sudo apt-get install -y git rsync fastfetch
+        bash linux-installer.sh
+        ;;
+    dnf)
+        sudo dnf makecache
+        sudo dnf install -y git rsync fastfetch
+        bash linux-installer.sh
+        ;;
+    zypper)
+        sudo zypper refresh
+        sudo zypper install -y git rsync fastfetch
+        bash linux-installer.sh
+        ;;
+    pacman)
+        sudo pacman -Syu --needed git rsync fastfetch
+        bash linux-installer.sh
+        ;;
+    brew)
+        brew update
+        brew install git rsync fastfetch
+        bash mac-installer.sh
+        ;;
+
+    *)
+        echo "Unsupported package manager: $PKG_MANAGER" >&2
+        exit 1
+        ;;
+esac
