@@ -10,6 +10,13 @@ case $- in
     *) return;;
 esac
 
+##Color Words
+colorword() {
+    local color="$1"
+    shift
+    printf '\033[%sm%s\033[0m' "$color" "$*"
+}
+
 #Declare Dotfiles Git repository
 dotfiles() {
     git --git-dir="$HOME/.dotfiles" --work-tree="$HOME" "$@"
@@ -90,35 +97,36 @@ dotfiles() {
 if command -v apt-get >/dev/null 2>&1; then
     alias update="sudo apt-get update && sudo apt-get upgrade -y"
     alias install="sudo apt-get install"
-    echo "Package manager recognized as APT (Debian based)"
+    echo "Package manager recognized as $(colorword 31 Debian) based $(colorword '1;31' APT)." 
 elif command -v pacman >/dev/null 2>&1; then
     if command -v yay >/dev/null 2>&1; then
         alias update="sudo pacman -Syu && yay -Sua"
-        echo "Package manager recognized as Pacman and Yay (Arch based)"
+       echo "Package managers recognized as $(colorword 34 "Arch Linux") based $(colorword '1;34' "Pacman and Yay")." 
     else
         alias update="sudo pacman -Syu"
-        echo "Package manager recognized as Pacman (Arch based)"
+        echo "Package manager recognized as $(colorword 34 "Arch Linux") based $(colorword '1;34' "Pa    cman")."
     fi
     alias install="sudo pacman -S"
 elif command -v brew >/dev/null 2>&1; then
     alias update="brew update && brew upgrade"
-    echo "Package manager recognized as Homebrew (Mac)"
+    echo "Package manager recognized as $(colorword 35 "macOS") based $(colorword '1;35' Homebrew)."
 elif command -v zypper >/dev/null 2>&1; then
     . /etc/os-release
     alias install="sudo zypper install"
     case "$ID" in
         opensuse-tumbleweed)
             alias update="sudo zypper dup"
-            echo "Package manager recognized as Zypper (openSUSE Tumbleweed)"
+            echo "Package manager recognized as $(colorword 32 Zypper) for $(colorword 32 openSUSE) $(colorword '1;32' Tumbleweed)."
             ;;
         opensuse-leap)
             alias update="sudo zypper ref && sudo zypper up"
-            echo "Package manager recognizzed as Zypper (openSUSE Leap)"
+            echo "Package manager recognized as $(colorword 32 Zypper) for $(colorword 32 "openSUSE Leap")."
             ;;
         *)
-            echo "Package manager recognized as Zypper (Unsupported Distro - Update Dotfiles)"
+            echo "Package manager recognized as $(colorword 32 SUSE) based $(colorword 32 Zypper)."
+            echo "$(colorword '5;31' "No package manager aliases set, unsupported distro")"
             ;;
     esac
 else
-    echo "Bash does not recognise this OS's package manager, update dotfiles"
+    echo "$(colorword '5;31' "Bash does not recognise this distro's package manager, update dotfiles")"
 fi
