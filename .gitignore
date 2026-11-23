@@ -27,4 +27,5 @@ id_ecdsa
 *.bak
 *.swp
 *.swo
+*.wip
 *~
