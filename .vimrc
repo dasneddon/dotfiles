@@ -19,7 +19,7 @@ set laststatus=2
 set showcmd
 set wildmenu
 set scrolloff=5
-colorscheme industry
+colorscheme koehler
 
 " ==========================================
 " Indentation
