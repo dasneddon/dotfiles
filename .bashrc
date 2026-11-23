@@ -92,9 +92,14 @@ if command -v apt-get >/dev/null 2>&1; then
     alias install="sudo apt-get install"
     echo "Package manager recognized as APT (Debian based)"
 elif command -v pacman >/dev/null 2>&1; then
-    alias update="sudo pacman -Syu && yay -Sua"
+    if command -v yay >/dev/null 2>&1; then
+        alias update="sudo pacman -Syu && yay -Sua"
+        echo "Package manager recognized as Pacman and Yay (Arch based)"
+    else
+        alias update="sudo pacman -Syu"
+        echo "Package manager recognized as Pacman (Arch based)"
+    fi
     alias install="sudo pacman -S"
-    echo "Package manager recognized as Pacman and Yay (Arch based)"
 elif command -v brew >/dev/null 2>&1; then
     alias update="brew update && brew upgrade"
     echo "Package manager recognized as Homebrew (Mac)"
