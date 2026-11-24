@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #Package Bundle
-BUNDLE="fastfetch rsync git vim tmux gh"
+BUNDLE=(fastfetch rsync git vim tmux gh)
 
 
 # Detect package manager
@@ -15,8 +15,6 @@ elif command -v pacman &>/dev/null; then
     PKG_MANAGER="pacman"
 elif command -v brew &>/dev/null; then
     PKG_MANAGER="brew"
-elif command -v apk &>/dev/null; then
-    PKG_MANAGER="apk"
 else
     echo "Unsupported package manager" >&2
     exit 1
@@ -25,33 +23,36 @@ fi
 # Install packages
 case "$PKG_MANAGER" in
     apt)
-        sudo add-apt-repository ppa:zhangsongcui3371/fastfetch
+        if ! apt-cache show fastfetch &/dev/null; then
+            if [[ "$ID" == "ubuntu" || "$ID_LIKE" == *ubuntu* ]]; then
+                sudo apt-get install -y software-properties-common
+                sudo add-apt-repository ppa:zhangsongcui3371/fastfetch
+                sudo apt-get update
+            fi
+        fi
         sudo apt-get update
-        sudo apt-get install fastfetch
-        sudo apt-get update
-        sudo apt-get install -y $BUNDLE
+        sudo apt-get install -y "${BUNDLE[@]}"
         bash linux-installer.sh
         ;;
     dnf)
         sudo dnf makecache
-        sudo dnf install -y $BUNDLE
+        sudo dnf install -y "${BUNDLE[@]}"
         bash linux-installer.sh
         ;;
     zypper)
         sudo zypper refresh
-        sudo zypper install -y $BUNDLE
+        sudo zypper install -y "${BUNDLE[@]}"
         bash linux-installer.sh
         ;;
     pacman)
-        sudo pacman -Syu --needed $BUNDLE
+        sudo pacman -Syu --needed "${BUNDLE[@]}"
         bash linux-installer.sh
         ;;
     brew)
         brew update
-        brew install $BUNDLE
+        brew install "${BUNDLE[@]}"
         bash mac-installer.sh
         ;;
-
     *)
         echo "Unsupported package manager: $PKG_MANAGER" >&2
         exit 1
