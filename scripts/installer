@@ -26,10 +26,9 @@ fi
 case "$PKG_MANAGER" in
     apt)
         sudo add-apt-repository ppa:zhangsongcui3371/fastfetch
-        sudo apt update
-        sudo apt install fastfetch
         sudo apt-get update
-
+        sudo apt-get install fastfetch
+        sudo apt-get update
         sudo apt-get install -y $BUNDLE
         bash linux-installer.sh
         ;;
