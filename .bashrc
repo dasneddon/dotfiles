@@ -127,6 +127,10 @@ elif command -v zypper >/dev/null 2>&1; then
             echo "$(colorword '5;31' "No package manager aliases set, unsupported distro")"
             ;;
     esac
+elif command -v dnf >/dev/null 2>&1; then
+    aias update="sudo dnf upgrade"
+    alias install="sudo dnf install"
+    echo "Package manager recognized as $(colorword 31 RedHat) based $(colorword '1;34' DNF)."
 else
     echo "$(colorword '5;31' "Bash does not recognise this distro's package manager, update dotfiles")"
 fi
