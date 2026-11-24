@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+#Package Bundle
+BUNDLE="fastfetch rsync git vim tmux gh"
+
+
 # Detect package manager
 if command -v apt-get &>/dev/null; then
     PKG_MANAGER="apt"
@@ -21,27 +25,31 @@ fi
 # Install packages
 case "$PKG_MANAGER" in
     apt)
+        sudo add-apt-repository ppa:zhangsongcui3371/fastfetch
+        sudo apt update
+        sudo apt install fastfetch
         sudo apt-get update
-        sudo apt-get install -y git rsync fastfetch
+
+        sudo apt-get install -y $BUNDLE
         bash linux-installer.sh
         ;;
     dnf)
         sudo dnf makecache
-        sudo dnf install -y git rsync fastfetch
+        sudo dnf install -y $BUNDLE
         bash linux-installer.sh
         ;;
     zypper)
         sudo zypper refresh
-        sudo zypper install -y git rsync fastfetch
+        sudo zypper install -y $BUNDLE
         bash linux-installer.sh
         ;;
     pacman)
-        sudo pacman -Syu --needed git rsync fastfetch
+        sudo pacman -Syu --needed $BUNDLE
         bash linux-installer.sh
         ;;
     brew)
         brew update
-        brew install git rsync fastfetch
+        brew install $BUNDLE
         bash mac-installer.sh
         ;;
 
