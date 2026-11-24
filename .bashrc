@@ -128,7 +128,7 @@ elif command -v zypper >/dev/null 2>&1; then
             ;;
     esac
 elif command -v dnf >/dev/null 2>&1; then
-    aias update="sudo dnf upgrade"
+    alias update="sudo dnf upgrade"
     alias install="sudo dnf install"
     echo "Package manager recognized as $(colorword 31 RedHat) based $(colorword '1;34' DNF)."
 else
