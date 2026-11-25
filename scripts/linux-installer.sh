@@ -32,7 +32,8 @@ if [[ ! -f "$HOME/dotfiles/scripts/sync-dotfiles.sh" ]]; then
     exit 1
 fi
 
-REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+REPO="$(cd "$SCRIPT_DIR/.." && pwd -P)"
 
 echo "=== Installing dotfiles ==="
 
@@ -42,7 +43,7 @@ if [[ ! -f "$REPO/oh-my-bash/oh-my-bash.sh" ]]; then
     git -C "$REPO" submodule update --init --recursive
 fi
 
-bash "$REPO/sync-dotfiles.sh"
+bash "$SCRIPT_DIR/sync-dotfiles.sh"
 
 echo
 echo "=== Installation complete ==="
