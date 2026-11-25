@@ -1,62 +1,54 @@
 # Dotfiles
 
-Personal configuration files, shell customizations, and utility scripts maintained by **David Sneddon**.
+Personal configuration files, shell customizations, installation scripts, and command-line utilities for Linux and macOS.
 
-This repository provides a centralized collection of configurations used across my macOS and Linux systems. Its purpose is to maintain a consistent terminal environment while accommodating differences between operating systems, distributions, and individual machines.
+This repository provides a consistent terminal and development environment across multiple operating systems while accommodating differences between distributions, package managers, and hardware platforms.
 
-The configurations reflect my preference for Bash, Vim, traditional Unix utilities, and command-line workflows.
+The project emphasizes Bash, Vim, traditional Unix utilities, portability, and reproducible system configuration.
 
 ## Features
 
-- **Cross-platform Bash configuration** for macOS and several Linux distributions.
-- **Custom Oh My Bash theme** and shell enhancements.
-- **Fastfetch integration** for displaying system information.
-- **Package manager detection** with convenient update and installation aliases.
-- **Vim configuration** with syntax highlighting, indentation rules, and keyboard shortcuts.
-- **Custom directory colors** for terminal listings.
-- **Shell utilities** for everyday command-line operations.
-- **Optional synchronization** of configuration files from the repository.
+- Automated, cross-platform installation.
+- Operating system and package manager detection.
+- Installation of essential command-line utilities.
+- Custom Oh My Bash theme with Git integration.
+- Fastfetch system information reporting.
+- Standardized Bash aliases and functions.
+- Customized Vim editing environment.
+- Terminal directory colors.
+- Automated configuration synchronization.
+- Git submodule management.
+- Platform-specific configuration handling.
 
-## Repository Structure
+## Supported Platforms
 
-```text
-dotfiles/
-├── .config/
-│   └── fastfetch/             # Fastfetch configuration
-├── .oh-my-bash-custom/
-│   └── themes/                # Custom Bash themes
-├── oh-my-bash/                # Git submodule
-├── scripts/                   # Utility and synchronization scripts
-├── .bash_profile              # Bash login configuration
-├── .bashrc                   # Interactive Bash configuration
-├── .dircolors                # Terminal directory colors
-├── .gitignore
-├── .gitmodules
-├── .profile                  # Login environment settings
-├── .vimrc                    # Vim configuration
-└── LICENSE                   # GNU GPLv3
-```
-
-## Supported Environments
-
-The configurations are primarily intended for:
-
-| Platform | Package Manager |
+| Operating System | Package Manager |
 |---|---|
-| Debian / Ubuntu | APT |
+| Debian | APT |
+| Ubuntu | APT |
+| Linux Mint | APT |
+| Fedora | DNF |
 | Arch Linux | Pacman |
-| Arch Linux with Yay | Pacman / Yay |
 | openSUSE Leap | Zypper |
 | openSUSE Tumbleweed | Zypper |
-| macOS | Homebrew |
+| macOS — Intel | Homebrew |
+| macOS — Apple Silicon | Homebrew |
 
-Other Unix-like systems may work with modifications.
-
-Some features depend on external utilities being installed.
+Other distributions using these package managers may also be compatible, although compatibility is not guaranteed.
 
 ## Installation
 
-### 1. Clone the repository
+### Prerequisites
+
+- Bash
+- Git
+- Internet connectivity
+- A supported package manager
+- Administrative privileges where required
+
+macOS users must have [Homebrew](https://brew.sh/) installed.
+
+### Clone the repository
 
 ```bash
 git clone --recurse-submodules \
@@ -64,20 +56,293 @@ git clone --recurse-submodules \
     ~/dotfiles
 ```
 
-The `--recurse-submodules` option retrieves Oh My Bash alongside the repository.
+The repository should be located at `~/dotfiles`, as this location is used by the installation and synchronization scripts.
 
-### 2. Install configurations selectively
+### Run the installer
 
-Configurations can be copied individually rather than deploying the entire repository.
+```bash
+cd ~/dotfiles
+./scripts/installer
+```
+
+The installer detects the available package manager, installs the required software, and executes the appropriate platform-specific installation script.
+
+Run the installer as your normal user. Administrative privileges will be requested when necessary.
+
+**WARNING:** Installation may overwrite existing configuration files in your home directory. Back up your existing configurations before proceeding.
+
+### Reload your shell
+
+After installation, open a new terminal session or reload your Bash configuration:
+
+```bash
+source ~/.bashrc
+```
+
+Alternatively, replace your current shell with a fresh interactive Bash session:
+
+```bash
+exec bash -i
+```
+
+## Repository Structure
+
+The repository contains configuration files, installation utilities, and third-party dependencies.
+
+```text
+dotfiles/
+├── .config/
+│   └── fastfetch/
+├── .oh-my-bash-custom/
+│   └── themes/
+├── oh-my-bash/
+├── scripts/
+│   ├── installer
+│   ├── linux-installer.sh
+│   ├── mac-installer.sh
+│   └── sync-dotfiles.sh
+├── .bash_profile
+├── .bashrc
+├── .dircolors
+├── .gitignore
+├── .gitmodules
+├── .profile
+├── .vimrc
+├── LICENSE
+└── README.md
+```
+
+## Installation Scripts
+
+| Script | Description |
+|---|---|
+| `installer` | Detects the package manager and coordinates installation |
+| `linux-installer.sh` | Performs Linux-specific configuration deployment |
+| `mac-installer.sh` | Performs macOS-specific configuration deployment |
+| `sync-dotfiles.sh` | Retrieves and synchronizes configuration files |
+
+The primary installer serves as a common entry point across supported operating systems. Platform-specific installation logic is maintained separately to simplify maintenance and accommodate differences between Linux and macOS.
+
+### Software Dependencies
+
+The installation process provides a common collection of command-line utilities.
+
+| Software | Purpose |
+|---|---|
+| Bash | Command-line shell |
+| Git | Distributed version control |
+| Vim | Terminal text editor |
+| tmux | Terminal multiplexing |
+| rsync | File synchronization |
+| Fastfetch | System information reporting |
+| Oh My Bash | Bash configuration framework |
+
+Software availability and installation procedures depend on the operating system and package manager.
+
+### macOS
+
+The macOS installation accommodates both Intel and Apple Silicon systems.
+
+Where required, the installer configures Homebrew Bash and registers it as an available login shell.
+
+## Bash Configuration
+
+The Bash configuration provides a consistent interactive shell environment across Linux and macOS.
+
+Features include:
+
+- Custom terminal prompt.
+- Git repository status integration.
+- Command aliases.
+- Reusable shell functions.
+- Package manager detection.
+- Operating system awareness.
+- Terminal color customization.
+- Standardized environment variables.
+- Fastfetch integration.
+
+### Oh My Bash
+
+[Oh My Bash](https://github.com/ohmybash/oh-my-bash) is included as a Git submodule.
+
+The upstream project provides the underlying Bash configuration framework, while this repository supplies additional configuration and customization.
+
+### Custom Theme
+
+The included `dave` theme provides a customized terminal prompt with information such as:
+
+- Current username.
+- Hostname.
+- Working directory.
+- Git branch.
+- Git working tree status.
+- Command exit status.
+- Time.
+
+The theme is intended to provide useful contextual information without requiring additional commands.
+
+### Package Manager Integration
+
+The Bash configuration detects the available package manager and provides common commands for routine system administration.
 
 For example:
 
 ```bash
+update
+```
+
+Updates the system using its native package manager.
+
+Where supported:
+
+```bash
+install vim
+```
+
+Installs a package using the appropriate package manager.
+
+The intention is to provide a familiar command-line workflow without replacing the underlying package management tools.
+
+## Vim Configuration
+
+The included `.vimrc` provides a standardized editing environment suitable for programming, configuration management, and general system administration.
+
+Features include:
+
+- Syntax highlighting.
+- Filetype detection.
+- Line numbering.
+- Cursor highlighting.
+- Language-specific indentation.
+- Smart case-sensitive searching.
+- Customized keyboard mappings.
+- Configuration for Python, Bash, C, C++, and Makefiles.
+
+### Keyboard Shortcuts
+
+| Shortcut | Action |
+|---|---|
+| F5 | Save the current file |
+| F7 | Execute supported Python or Bash scripts |
+| F8 | Toggle line numbers |
+| F9 | Toggle paste mode |
+| Ctrl+L | Clear search highlighting |
+
+Vim is configured as the preferred terminal text editor:
+
+```bash
+export EDITOR='vim'
+```
+
+## Fastfetch
+
+[Fastfetch](https://github.com/fastfetch-cli/fastfetch) provides system information within the terminal.
+
+The configuration is maintained in:
+
+```text
+~/.config/fastfetch/
+```
+
+Depending on the operating system and available hardware, displayed information may include:
+
+- Operating system and kernel.
+- System uptime and load averages.
+- Installed packages.
+- Shell and terminal.
+- Desktop environment and window manager.
+- Processor and graphics hardware.
+- Memory and swap utilization.
+- Storage utilization.
+- Network information.
+- Display information.
+- Battery status.
+
+Run Fastfetch manually:
+
+```bash
+fastfetch
+```
+
+## Configuration Synchronization
+
+Configuration files are maintained in a dedicated Git repository and synchronized into the user's home directory.
+
+The synchronization script is located at:
+
+```text
+~/dotfiles/scripts/sync-dotfiles.sh
+```
+
+### Synchronize Configuration Files
+
+```bash
+cd ~/dotfiles
+./scripts/sync-dotfiles.sh
+```
+
+The synchronization process uses Git and rsync to retrieve and deploy configuration files.
+
+The included login configuration also provides support for invoking the synchronization script automatically.
+
+### Update the Repository
+
+To retrieve the latest repository changes:
+
+```bash
+git -C ~/dotfiles pull --ff-only
+```
+
+To synchronize Git submodules:
+
+```bash
+git -C ~/dotfiles submodule sync --recursive
+git -C ~/dotfiles submodule update --init --recursive
+```
+
+### Managing Configuration Changes
+
+The repository should serve as the source of truth for managed configuration files.
+
+Make permanent changes inside the repository rather than directly modifying deployed configuration files.
+
+For example:
+
+```bash
+vim ~/dotfiles/.bashrc
+```
+
+Review changes:
+
+```bash
+git -C ~/dotfiles diff
+```
+
+Deploy the updated configuration:
+
+```bash
+~/dotfiles/scripts/sync-dotfiles.sh
+```
+
+Direct modifications to deployed configuration files may be overwritten during subsequent synchronization.
+
+## Selective Installation
+
+Running the complete installer is not required. Individual configuration files can be installed independently.
+
+### Vim
+
+```bash
 cp -i ~/dotfiles/.vimrc ~/.vimrc
+```
+
+### Directory Colors
+
+```bash
 cp -i ~/dotfiles/.dircolors ~/.dircolors
 ```
 
-For Fastfetch:
+### Fastfetch
 
 ```bash
 mkdir -p ~/.config/fastfetch
@@ -86,137 +351,105 @@ cp -Ri ~/dotfiles/.config/fastfetch/. \
     ~/.config/fastfetch/
 ```
 
-The `-i` option prompts before overwriting existing files.
+Selective installation is useful for users who wish to retain their existing shell environment or adopt only specific components of the repository.
 
-### 3. Configure Bash
+## Troubleshooting
 
-The included `.bashrc` uses Oh My Bash and a custom theme named `dave`.
+### Missing Git Submodules
 
-Install Oh My Bash and the custom theme before activating the configuration.
-
-After setting up the required dependencies, copy the Bash configuration:
+Initialize the repository's submodules:
 
 ```bash
-cp -i ~/dotfiles/.bashrc ~/.bashrc
+git -C ~/dotfiles submodule update --init --recursive
 ```
 
-Start a new interactive Bash shell to load the configuration.
+### Local Changes Prevent Updates
 
-**Note:** The Bash configuration expects Oh My Bash at `~/.oh-my-bash` and custom themes at `~/.oh-my-bash-custom`. Machine-specific settings should be reviewed before installation.
-
-## Bash Customizations
-
-The `.bashrc` includes several conveniences.
-
-### Package Manager Integration
-
-The shell detects supported package managers and configures aliases appropriate to the environment.
-
-Examples:
+Inspect the repository:
 
 ```bash
-update
+git -C ~/dotfiles status
+git -C ~/dotfiles diff
 ```
 
-Updates packages using the detected package manager.
+Commit, stash, or deliberately discard conflicting changes before updating.
+
+### Configuration Changes Are Not Visible
+
+Reload the Bash configuration:
 
 ```bash
-install vim
+source ~/.bashrc
 ```
 
-Installs a package on supported systems where the `install` alias is defined.
+Alternatively, start a new terminal session.
 
-The implementation distinguishes between openSUSE Leap and Tumbleweed, including their different recommended update operations.
+### Installer Permission Denied
 
-### Fastfetch
-
-When Fastfetch is installed, it runs automatically in interactive Bash sessions.
-
-### Oh My Bash
-
-The repository uses Oh My Bash with a custom theme and selected completions and plugins.
-
-These provide an enhanced prompt, command completion, Git integration, and other shell conveniences.
-
-### Default Editor
-
-Vim is configured as the preferred terminal editor:
+Ensure the installer is executable:
 
 ```bash
-export EDITOR='vim'
+chmod +x ~/dotfiles/scripts/installer
 ```
 
-## Vim Configuration
+Alternatively, invoke it directly with Bash:
 
-The `.vimrc` provides a consistent editing environment with:
-
-- Syntax highlighting and filetype detection.
-- Line numbers, cursor highlighting, and status information.
-- Four-space indentation for common programming languages.
-- Smart case-sensitive searching.
-- Python, shell, C, C++, and Makefile-specific settings.
-- Keyboard shortcuts for saving, executing scripts, and toggling editor settings.
-
-Selected shortcuts:
-
-| Shortcut | Action |
-|---|---|
-| F5 | Save current file |
-| F7 | Execute Python or Bash script |
-| F8 | Toggle line numbers |
-| F9 | Toggle paste mode |
-| Ctrl+L | Clear search highlighting |
-
-## Configuration Management
-
-This repository serves as a central reference for maintaining configurations across different machines.
-
-Files can be copied, modified, and deployed independently according to each system's requirements. A configuration suitable for a Linux server may not necessarily be appropriate for a macOS workstation.
-
-### Optional Synchronization
-
-The repository includes:
-
-```text
-scripts/sync-dotfiles.sh
+```bash
+bash ~/dotfiles/scripts/installer
 ```
 
-The script retrieves updates using Git and copies repository contents into the user's home directory using `rsync`.
+### Unsupported Package Manager
 
-The included `.profile` also contains a hook that invokes the script during interactive login when it is executable.
-
-**Warning:** The synchronization script uses overwrite behavior. It may replace existing configuration files, so review the script and back up local settings before enabling it.
-
-Selective manual installation is preferable when preserving machine-specific configurations.
-
-## Dependencies
-
-Depending on which configurations are used:
-
-- Bash
-- Git
-- Vim
-- Oh My Bash
-- Fastfetch
-- GNU `dircolors` on applicable Linux systems
-- `rsync` for synchronization
-- A supported package manager
-
-Not all dependencies are necessary on every machine.
+The installer requires a recognized package manager. Users of unsupported distributions may install the required dependencies manually and selectively deploy the configuration files.
 
 ## Security
 
-This repository is intended for configuration files and general-purpose scripts.
+Before installing configuration files from this or any other repository:
 
-Private SSH keys, passwords, authentication tokens, and other sensitive information should not be committed.
+- Review installation scripts before executing them.
+- Back up existing configuration files.
+- Run installers as a normal user.
+- Review third-party dependencies.
+- Keep Git TLS certificate verification enabled.
+- Never commit passwords, private keys, access tokens, or other credentials.
 
-Machine-specific configurations should be reviewed before being published or copied between systems.
+Some installation operations require administrative privileges to install software or configure the operating system.
+
+## Contributing
+
+Suggestions, bug reports, and improvements are welcome.
+
+To contribute:
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Make and test your changes.
+4. Submit a pull request.
+
+Changes should prioritize portability, readability, maintainability, and compatibility with existing supported platforms.
+
+## Design Philosophy
+
+This project draws upon traditional Unix principles of simplicity, modularity, portability, and separation of responsibilities.
+
+The objective is not to eliminate differences between operating systems, but to provide a familiar and productive environment regardless of the underlying platform.
+
+The project prioritizes:
+
+- Reproducible system configuration.
+- Native package management.
+- Minimal unnecessary dependencies.
+- Transparent shell scripts.
+- Version-controlled configuration.
+- Independent, reusable components.
+- Consistent command-line workflows.
+- Free and open-source software.
 
 ## License
 
-This repository contains original material distributed under the **GNU General Public License, Version 3 (GPLv3)**, as specified in the [LICENSE](LICENSE) file.
+Original material in this repository is licensed under the **GNU General Public License, Version 3**, as specified in the [LICENSE](LICENSE) file.
 
-Third-party components, including the Oh My Bash submodule, retain their respective upstream licenses.
+Third-party components retain their respective upstream licenses.
 
 ## Author
 
@@ -226,4 +459,4 @@ GitHub: [@dasneddon](https://github.com/dasneddon)
 
 ---
 
-*Maintained as a personal collection of configurations and an ongoing exploration of Unix-like operating systems, shell environments, and command-line tools.*
+*One configuration. Many machines. A consistent environment.*
