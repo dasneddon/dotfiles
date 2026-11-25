@@ -34,21 +34,21 @@ case "$PKG_MANAGER" in
         fi
         sudo apt-get update
         sudo apt-get install -y "${BUNDLE[@]}"
-        bash "$SCRIPT_DIR/linux-installer.sh"/g
+        bash "$SCRIPT_DIR/linux-installer.sh"
         ;;
     dnf)
         sudo dnf makecache
         sudo dnf install -y "${BUNDLE[@]}"
-        bash "$SCRIPT_DIR/linux-installer.sh"/g
+        bash "$SCRIPT_DIR/linux-installer.sh"
         ;;
     zypper)
         sudo zypper refresh
         sudo zypper install -y "${BUNDLE[@]}"
-        bash "$SCRIPT_DIR/linux-installer.sh"/g
+        bash "$SCRIPT_DIR/linux-installer.sh"
         ;;
     pacman)
         sudo pacman -Syu --needed "${BUNDLE[@]}"
-        bash "$SCRIPT_DIR/linux-installer.sh"/g
+        bash "$SCRIPT_DIR/linux-installer.sh"
         ;;
     brew)
         brew update
