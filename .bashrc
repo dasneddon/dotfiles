@@ -70,7 +70,8 @@ plugins=(
 source "$OSH"/oh-my-bash.sh
 
 ##Paths
-export PATH=$PATH:~/.cargo/bin #Rust
+export PATH=$PATH:~/bin:~/.cargo/bin
+#User Binaries:Rust
 
 ##Fastfetch
 command -v fastfetch >/dev/null 2>&1 && fastfetch
