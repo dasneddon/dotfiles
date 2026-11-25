@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 #Package Bundle
 BUNDLE=(fastfetch rsync git vim tmux gh)
 
@@ -32,26 +34,26 @@ case "$PKG_MANAGER" in
         fi
         sudo apt-get update
         sudo apt-get install -y "${BUNDLE[@]}"
-        bash linux-installer.sh
+        bash "$SCRIPT_DIR/linux-installer.sh"/g
         ;;
     dnf)
         sudo dnf makecache
         sudo dnf install -y "${BUNDLE[@]}"
-        bash linux-installer.sh
+        bash "$SCRIPT_DIR/linux-installer.sh"/g
         ;;
     zypper)
         sudo zypper refresh
         sudo zypper install -y "${BUNDLE[@]}"
-        bash linux-installer.sh
+        bash "$SCRIPT_DIR/linux-installer.sh"/g
         ;;
     pacman)
         sudo pacman -Syu --needed "${BUNDLE[@]}"
-        bash linux-installer.sh
+        bash "$SCRIPT_DIR/linux-installer.sh"/g
         ;;
     brew)
         brew update
         brew install "${BUNDLE[@]}"
-        bash mac-installer.sh
+        bash "$SCRIPT_DIR/mac-installer.sh"
         ;;
     *)
         echo "Unsupported package manager: $PKG_MANAGER" >&2
