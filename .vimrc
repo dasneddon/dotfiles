@@ -1,4 +1,5 @@
-"Now with vibecoded slop!
+" SPDX-License-Identifier: GPL-3.0-only
+" Copyright (C) 2026 David Sneddon
 " ==========================================
 " General Vim Configuration
 " ==========================================

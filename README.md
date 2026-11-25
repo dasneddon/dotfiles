@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: GPL-3.0-only
+Copyright (C) 2026 David Sneddon
+-->
 # Dotfiles
 
 Personal configuration files, shell customizations, installation scripts, and command-line utilities for Linux and macOS.

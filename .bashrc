@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 David Sneddon
 ##Bash Initializaion
 #Prevent duplicate initialization
 if [[ -n ${_BASHRC_LOADED:-} ]]; then
