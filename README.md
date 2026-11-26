@@ -10,6 +10,15 @@ This repository provides a consistent terminal and development environment acros
 
 The project emphasizes Bash, Vim, traditional Unix utilities, portability, and reproducible system configuration.
 
+## v1.1.0 Release Notes
+
+- Added Slackware support using Slackpkg. The installer checks for `rsync`, `git`, `vim`, and `tmux` and installs only missing commands from that bundle.
+- Updated Linux distribution detection in the installer and Bash configuration to use `ID`, then recognized family names in `ID_LIKE`, from `/etc/os-release` (or `/usr/lib/os-release` when the former is unavailable). Legacy release files provide a fallback, including `/etc/slackware-version`.
+- Standardized package management aliases: `update`, `pkginstall`, `pkgremove`, and `pkgsearch`. Use `pkginstall` for package installation; the standard Unix `install` command remains available.
+- Made Fastfetch optional on Slackware. The installer warns when it is absent, shell startup runs it only when available, and the Linux installer reports `Not installed` when it is missing.
+
+**Validation status:** Slackware support has not been runtime-tested. These notes describe the implementation; successful installation and package operations on Slackware have not been verified.
+
 ## Features
 
 - Automated, cross-platform installation.
@@ -35,6 +44,7 @@ The project emphasizes Bash, Vim, traditional Unix utilities, portability, and r
 | Arch Linux | Pacman |
 | openSUSE Leap | Zypper |
 | openSUSE Tumbleweed | Zypper |
+| Slackware (not runtime-tested) | Slackpkg |
 | macOS — Intel | Homebrew |
 | macOS — Apple Silicon | Homebrew |
 
@@ -69,7 +79,7 @@ cd ~/dotfiles
 ./scripts/installer
 ```
 
-The installer detects the available package manager, installs the required software, and executes the appropriate platform-specific installation script.
+The installer identifies the operating system and Linux distribution, selects the corresponding package manager, installs the required software, and executes the appropriate platform-specific installation script.
 
 Run the installer as your normal user. Administrative privileges will be requested when necessary.
 
@@ -120,7 +130,7 @@ dotfiles/
 
 | Script | Description |
 |---|---|
-| `installer` | Detects the package manager and coordinates installation |
+| `installer` | Identifies the operating system and distribution, selects the package manager, and coordinates installation |
 | `linux-installer.sh` | Performs Linux-specific configuration deployment |
 | `mac-installer.sh` | Performs macOS-specific configuration deployment |
 | `sync-dotfiles.sh` | Retrieves and synchronizes configuration files |
@@ -141,7 +151,15 @@ The installation process provides a common collection of command-line utilities.
 | Fastfetch | System information reporting |
 | Oh My Bash | Bash configuration framework |
 
-Software availability and installation procedures depend on the operating system and package manager.
+Software availability and installation procedures depend on the operating system and package manager. Fastfetch is optional and installed separately on Slackware.
+
+### Slackware
+
+Slackware support has not been runtime-tested. Before running the installer, ensure `sudo` is configured for your normal user and Slackpkg has a suitable mirror configured in `/etc/slackpkg/mirrors`.
+
+The installer checks whether `rsync`, `git`, `vim`, and `tmux` are available in `PATH`. If any are missing, it refreshes the package list with `sudo /usr/sbin/slackpkg update` and installs the missing packages using `/usr/sbin/slackpkg` with `-batch=on -default_answer=y`.
+
+Fastfetch is excluded from the Slackware package bundle. Install it separately if desired; its absence does not prevent the Linux installer from reporting completion or the shell from starting. The shell aliases below invoke `slackpkg` by name, so it must be available in your `PATH` when using those aliases.
 
 ### macOS
 
@@ -187,25 +205,27 @@ The theme is intended to provide useful contextual information without requiring
 
 ### Package Manager Integration
 
-The Bash configuration detects the available package manager and provides common commands for routine system administration.
+The Bash configuration identifies Linux distributions using `ID` and then `ID_LIKE` from the operating system release file, with legacy release-file fallbacks. macOS uses Homebrew. It provides these package management aliases for recognized families:
 
-For example:
+| Alias | Purpose | Example |
+|---|---|---|
+| `update` | Refresh package information and/or upgrade packages, depending on the platform | `update` |
+| `pkginstall` | Install packages | `pkginstall vim` |
+| `pkgremove` | Remove packages | `pkgremove vim` |
+| `pkgsearch` | Search for packages | `pkgsearch vim` |
 
-```bash
-update
-```
+The aliases use APT, Pacman, DNF, Zypper, Homebrew, or Slackpkg as appropriate. On Arch systems with Yay installed, `update` also runs `yay -Sua` after `sudo pacman -Syu`. On openSUSE Tumbleweed, `update` uses `sudo zypper dup`; on Leap, it uses `sudo zypper ref && sudo zypper up`. Other recognized SUSE distributions receive the package aliases but no `update` alias. Homebrew aliases are defined only when `brew` is available.
 
-Updates the system using its native package manager.
+On Slackware, the aliases expand to:
 
-Where supported:
+| Alias | Command |
+|---|---|
+| `update` | `sudo slackpkg update && sudo slackpkg install-new && sudo slackpkg upgrade-all` |
+| `pkginstall` | `sudo slackpkg install` |
+| `pkgremove` | `sudo slackpkg remove` |
+| `pkgsearch` | `sudo slackpkg search` |
 
-```bash
-install vim
-```
-
-Installs a package using the appropriate package manager.
-
-The intention is to provide a familiar command-line workflow without replacing the underlying package management tools.
+These commands retain the native package manager's behavior and prompts. The Slackware `update` alias does not run `slackpkg clean-system`. Use `pkginstall` rather than `install` for package management; `install` remains the standard Unix file installation utility.
 
 ## Vim Configuration
 
@@ -240,7 +260,7 @@ export EDITOR='vim'
 
 ## Fastfetch
 
-[Fastfetch](https://github.com/fastfetch-cli/fastfetch) provides system information within the terminal.
+[Fastfetch](https://github.com/fastfetch-cli/fastfetch) provides system information within the terminal. On Slackware it is optional and must be installed separately. Bash startup invokes it only when the command is available; the Linux installer reports `Not installed` if it is absent.
 
 The configuration is maintained in:
 
