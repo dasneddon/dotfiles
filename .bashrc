@@ -1,4 +1,4 @@
-:%s/alias pkginstall=/alias pkginstall=/g# SPDX-License-Identifier: GPL-3.0-only
+# SPDX-License-Identifier: GPL-3.0-only
 # Copyright (C) 2026 David Sneddon
 ##Bash Initializaion
 #Prevent duplicate initialization
