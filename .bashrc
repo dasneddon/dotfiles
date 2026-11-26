@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-3.0-only
+:%s/alias pkginstall=/alias pkginstall=/g# SPDX-License-Identifier: GPL-3.0-only
 # Copyright (C) 2026 David Sneddon
 ##Bash Initializaion
 #Prevent duplicate initialization
@@ -99,7 +99,7 @@ dotfiles() {
 ##Package Manager
 if command -v apt-get >/dev/null 2>&1; then
     alias update="sudo apt-get update && sudo apt-get upgrade -y"
-    alias install="sudo apt-get install"
+    alias pkginstall="sudo apt-get install"
     echo "Package manager recognized as $(colorword 31 Debian) based $(colorword '1;31' APT)." 
 elif command -v pacman >/dev/null 2>&1; then
     if command -v yay >/dev/null 2>&1; then
@@ -109,13 +109,13 @@ elif command -v pacman >/dev/null 2>&1; then
         alias update="sudo pacman -Syu"
         echo "Package manager recognized as $(colorword '38;2;23;147;209' "Arch Linux") based $(colorword '1;34' "Pa    cman")."
     fi
-    alias install="sudo pacman -S"
+    alias pkginstall="sudo pacman -S"
 elif command -v brew >/dev/null 2>&1; then
     alias update="brew update && brew upgrade"
     echo "Package manager recognized as $(colorword 35 "macOS") based $(colorword '1;35' Homebrew)."
 elif command -v zypper >/dev/null 2>&1; then
     . /etc/os-release
-    alias install="sudo zypper install"
+    alias pkginstall="sudo zypper install"
     case "$ID" in
         opensuse-tumbleweed)
             alias update="sudo zypper dup"
@@ -132,7 +132,7 @@ elif command -v zypper >/dev/null 2>&1; then
     esac
 elif command -v dnf >/dev/null 2>&1; then
     alias update="sudo dnf upgrade"
-    alias install="sudo dnf install"
+    alias pkginstall="sudo dnf install"
     echo "Package manager recognized as $(colorword 31 RedHat) based $(colorword '1;34' DNF)."
 else
     echo "$(colorword '5;31' "Bash does not recognise this distro's package manager, update dotfiles")"
