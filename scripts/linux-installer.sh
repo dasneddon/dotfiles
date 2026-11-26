@@ -47,7 +47,7 @@ bash "$SCRIPT_DIR/sync-dotfiles.sh"
 
 echo
 echo "=== Installation complete ==="
-echo "Fastfetch: $(command -v fastfetch)"
+echo "Fastfetch: $(command -v fastfetch || echo 'Not installed')"
 echo "Dotfiles: $REPO"
 echo
 echo "Restart Terminal to load the configuration."

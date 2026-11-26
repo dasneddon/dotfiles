@@ -95,45 +95,174 @@ fi
 dotfiles() {
     git --git-dir="$HOME/.dotfiles" --work-tree="$HOME" "$@"
 }
-
 ##Package Manager
-if command -v apt-get >/dev/null 2>&1; then
-    alias update="sudo apt-get update && sudo apt-get upgrade -y"
-    alias pkginstall="sudo apt-get install"
-    echo "Package manager recognized as $(colorword 31 Debian) based $(colorword '1;31' APT)." 
-elif command -v pacman >/dev/null 2>&1; then
-    if command -v yay >/dev/null 2>&1; then
-        alias update="sudo pacman -Syu && yay -Sua"
-       echo "Package managers recognized as $(colorword '38;2;23;147;209' "Arch Linux") based $(colorword '1;34' "Pacman and Yay")." 
-    else
-        alias update="sudo pacman -Syu"
-        echo "Package manager recognized as $(colorword '38;2;23;147;209' "Arch Linux") based $(colorword '1;34' "Pa    cman")."
+
+# Identify operating system
+OS="$(uname -s)"
+
+# Identify Linux distribution
+read -r DISTRO DISTRO_LIKE < <(
+    ID=""
+    ID_LIKE=""
+
+    if [[ -r /etc/os-release ]]; then
+        . /etc/os-release
+    elif [[ -r /usr/lib/os-release ]]; then
+        . /usr/lib/os-release
     fi
-    alias pkginstall="sudo pacman -S"
-elif command -v brew >/dev/null 2>&1; then
-    alias update="brew update && brew upgrade"
-    echo "Package manager recognized as $(colorword 35 "macOS") based $(colorword '1;35' Homebrew)."
-elif command -v zypper >/dev/null 2>&1; then
-    . /etc/os-release
-    alias pkginstall="sudo zypper install"
-    case "$ID" in
-        opensuse-tumbleweed)
-            alias update="sudo zypper dup"
-            echo "Package manager recognized as $(colorword 32 Zypper) for $(colorword 32 openSUSE) $(colorword '1;32' Tumbleweed)."
+
+    printf '%s %s\n' "${ID:-unknown}" "$ID_LIKE"
+)
+
+# Identify distribution family
+if [[ "$OS" == "Darwin" ]]; then
+    FAMILY="macos"
+else
+    case "$DISTRO" in
+        debian|ubuntu|linuxmint|kali|pop|raspbian)
+            FAMILY="debian"
             ;;
-        opensuse-leap)
-            alias update="sudo zypper ref && sudo zypper up"
-            echo "Package manager recognized as $(colorword 32 Zypper) for $(colorword 32 "openSUSE Leap")."
+        arch|manjaro|endeavouros|garuda|cachyos)
+            FAMILY="arch"
+            ;;
+        opensuse*|sles|sled|suse)
+            FAMILY="suse"
+            ;;
+        fedora|rhel|centos|rocky|almalinux|ol)
+            FAMILY="redhat"
+            ;;
+        slackware)
+            FAMILY="slackware"
             ;;
         *)
-            echo "Package manager recognized as $(colorword 32 SUSE) based $(colorword 32 Zypper)."
-            echo "$(colorword '5;31' "No package manager aliases set, unsupported distro")"
+            case " $DISTRO_LIKE " in
+                *" debian "*|*" ubuntu "*)
+                    FAMILY="debian"
+                    ;;
+                *" arch "*)
+                    FAMILY="arch"
+                    ;;
+                *" suse "*|*" opensuse "*)
+                    FAMILY="suse"
+                    ;;
+                *" fedora "*|*" rhel "*|*" centos "*)
+                    FAMILY="redhat"
+                    ;;
+                *" slackware "*)
+                    FAMILY="slackware"
+                    ;;
+                *)
+                    FAMILY="unknown"
+                    ;;
+            esac
             ;;
     esac
-elif command -v dnf >/dev/null 2>&1; then
-    alias update="sudo dnf upgrade"
-    alias pkginstall="sudo dnf install"
-    echo "Package manager recognized as $(colorword 31 RedHat) based $(colorword '1;34' DNF)."
-else
-    echo "$(colorword '5;31' "Bash does not recognise this distro's package manager, update dotfiles")"
 fi
+
+# Fall back to legacy distribution release files
+if [[ "$FAMILY" == "unknown" && "$OS" == "Linux" ]]; then
+    if [[ -f /etc/debian_version ]]; then
+        FAMILY="debian"
+    elif [[ -f /etc/arch-release || -f /etc/manjaro-release ]]; then
+        FAMILY="arch"
+    elif [[ -f /etc/SuSE-release ]]; then
+        FAMILY="suse"
+    elif [[ -f /etc/redhat-release || -f /etc/fedora-release ]]; then
+        FAMILY="redhat"
+    elif [[ -f /etc/slackware-version ]]; then
+        FAMILY="slackware"
+    fi
+fi
+
+# Configure package manager aliases
+case "$FAMILY" in
+
+    debian)
+        alias update="sudo apt-get update && sudo apt-get upgrade -y"
+        alias pkginstall="sudo apt-get install"
+        alias pkgremove="sudo apt-get remove"
+        alias pkgsearch="apt-cache search"
+
+        echo "Package manager recognized as $(colorword 31 Debian) based $(colorword '1;31' APT)."
+        ;;
+
+    arch)
+        if command -v yay >/dev/null 2>&1; then
+            alias update="sudo pacman -Syu && yay -Sua"
+
+            echo "Package managers recognized as $(colorword '38;2;23;147;209' 'Arch Linux') based $(colorword '1;34' 'Pacman and Yay')."
+        else
+            alias update="sudo pacman -Syu"
+
+            echo "Package manager recognized as $(colorword '38;2;23;147;209' 'Arch Linux') based $(colorword '1;34' Pacman)."
+        fi
+
+        alias pkginstall="sudo pacman -S"
+        alias pkgremove="sudo pacman -R"
+        alias pkgsearch="pacman -Ss"
+        ;;
+
+    macos)
+        if command -v brew >/dev/null 2>&1; then
+            alias update="brew update && brew upgrade"
+            alias pkginstall="brew install"
+            alias pkgremove="brew uninstall"
+            alias pkgsearch="brew search"
+
+            echo "Package manager recognized as $(colorword 35 macOS) based $(colorword '1;35' Homebrew)."
+        else
+            echo "$(colorword '5;31' 'Homebrew is not installed or not in PATH.')"
+        fi
+        ;;
+
+    suse)
+        alias pkginstall="sudo zypper install"
+        alias pkgremove="sudo zypper remove"
+        alias pkgsearch="zypper search"
+
+        case "$DISTRO" in
+            opensuse-tumbleweed)
+                alias update="sudo zypper dup"
+
+                echo "Package manager recognized as $(colorword 32 Zypper) for $(colorword 32 openSUSE) $(colorword '1;32' Tumbleweed)."
+                ;;
+
+            opensuse-leap)
+                alias update="sudo zypper ref && sudo zypper up"
+
+                echo "Package manager recognized as $(colorword 32 Zypper) for $(colorword 32 'openSUSE Leap')."
+                ;;
+
+            *)
+                echo "Package manager recognized as $(colorword 32 SUSE) based $(colorword 32 Zypper)."
+                echo "$(colorword '5;31' 'No update alias set, unsupported SUSE distribution.')"
+                ;;
+        esac
+        ;;
+
+    redhat)
+        alias update="sudo dnf upgrade"
+        alias pkginstall="sudo dnf install"
+        alias pkgremove="sudo dnf remove"
+        alias pkgsearch="dnf search"
+
+        echo "Package manager recognized as $(colorword 31 RedHat) based $(colorword '1;34' DNF)."
+        ;;
+
+    slackware)
+        alias update="sudo slackpkg update && sudo slackpkg install-new && sudo slackpkg upgrade-all"
+        alias pkginstall="sudo slackpkg install"
+        alias pkgremove="sudo slackpkg remove"
+        alias pkgsearch="sudo slackpkg search"
+
+        echo "Package manager recognized as $(colorword '38;2;66;116;185' Slackware) based $(colorword '1;34' Slackpkg)."
+        ;;
+
+    *)
+        echo "$(colorword '5;31' 'Bash does not recognise this distribution, update dotfiles.')"
+        ;;
+
+esac
+
+# Remove temporary variables
+unset OS DISTRO DISTRO_LIKE FAMILY

@@ -1,62 +1,172 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 David Sneddon
+
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-#Package Bundle
-BUNDLE=(fastfetch rsync git vim tmux)
+# Do not run the installer as root
+if [[ "$EUID" -eq 0 ]]; then
+    echo "Error: Run this installer as your normal user." >&2
+    exit 1
+fi
 
+# Package bundles
+BUNDLE=(fastfetch rsync git vim tmux)
+SLACKWARE_BUNDLE=(rsync git vim tmux)
+
+# Identify operating system
+OS="$(uname -s)"
+ID=""
+ID_LIKE=""
+
+if [[ "$OS" == "Linux" ]]; then
+    if [[ -r /etc/os-release ]]; then
+        . /etc/os-release
+    elif [[ -r /usr/lib/os-release ]]; then
+        . /usr/lib/os-release
+    fi
+fi
 
 # Detect package manager
-if command -v apt-get &>/dev/null; then
-    PKG_MANAGER="apt"
-elif command -v dnf &>/dev/null; then
-    PKG_MANAGER="dnf"
-elif command -v zypper &>/dev/null; then
-    PKG_MANAGER="zypper"
-elif command -v pacman &>/dev/null; then
-    PKG_MANAGER="pacman"
-elif command -v brew &>/dev/null; then
+if [[ "$OS" == "Darwin" ]]; then
     PKG_MANAGER="brew"
+
+elif [[ "$OS" == "Linux" ]]; then
+    case "$ID" in
+        debian|ubuntu|linuxmint|kali|pop|raspbian)
+            PKG_MANAGER="apt"
+            ;;
+        arch|manjaro|endeavouros|garuda|cachyos)
+            PKG_MANAGER="pacman"
+            ;;
+        opensuse*|sles|sled|suse)
+            PKG_MANAGER="zypper"
+            ;;
+        fedora|rhel|centos|rocky|almalinux|ol)
+            PKG_MANAGER="dnf"
+            ;;
+        slackware)
+            PKG_MANAGER="slackpkg"
+            ;;
+        *)
+            case " $ID_LIKE " in
+                *" debian "*|*" ubuntu "*)
+                    PKG_MANAGER="apt"
+                    ;;
+                *" arch "*)
+                    PKG_MANAGER="pacman"
+                    ;;
+                *" suse "*|*" opensuse "*)
+                    PKG_MANAGER="zypper"
+                    ;;
+                *" fedora "*|*" rhel "*|*" centos "*)
+                    PKG_MANAGER="dnf"
+                    ;;
+                *" slackware "*)
+                    PKG_MANAGER="slackpkg"
+                    ;;
+                *)
+                    PKG_MANAGER="unknown"
+                    ;;
+            esac
+            ;;
+    esac
+
+    # Legacy distribution detection
+    if [[ "$PKG_MANAGER" == "unknown" ]]; then
+        if [[ -f /etc/debian_version ]]; then
+            PKG_MANAGER="apt"
+        elif [[ -f /etc/arch-release || -f /etc/manjaro-release ]]; then
+            PKG_MANAGER="pacman"
+        elif [[ -f /etc/SuSE-release ]]; then
+            PKG_MANAGER="zypper"
+        elif [[ -f /etc/redhat-release || -f /etc/fedora-release ]]; then
+            PKG_MANAGER="dnf"
+        elif [[ -f /etc/slackware-version ]]; then
+            PKG_MANAGER="slackpkg"
+        fi
+    fi
+
 else
-    echo "Unsupported package manager" >&2
-    exit 1
+    PKG_MANAGER="unknown"
 fi
 
 # Install packages
 case "$PKG_MANAGER" in
     apt)
+        sudo apt-get update
+
         if ! apt-cache show fastfetch &>/dev/null; then
-            if [[ "$ID" == "ubuntu" || "$ID_LIKE" == *ubuntu* ]]; then
+            if [[ "$ID" == "ubuntu" || " $ID_LIKE " == *" ubuntu "* ]]; then
                 sudo apt-get install -y software-properties-common
                 sudo add-apt-repository ppa:zhangsongcui3371/fastfetch
                 sudo apt-get update
             fi
         fi
-        sudo apt-get update
+
         sudo apt-get install -y "${BUNDLE[@]}"
-        bash "$SCRIPT_DIR/linux-installer.sh"
         ;;
+
     dnf)
         sudo dnf makecache
         sudo dnf install -y "${BUNDLE[@]}"
-        bash "$SCRIPT_DIR/linux-installer.sh"
         ;;
+
     zypper)
         sudo zypper refresh
         sudo zypper install -y "${BUNDLE[@]}"
-        bash "$SCRIPT_DIR/linux-installer.sh"
         ;;
+
     pacman)
         sudo pacman -Syu --needed "${BUNDLE[@]}"
-        bash "$SCRIPT_DIR/linux-installer.sh"
         ;;
+
     brew)
+        if ! command -v brew &>/dev/null; then
+            echo "Error: Homebrew is not installed." >&2
+            exit 1
+        fi
+
         brew update
         brew install "${BUNDLE[@]}"
-        bash "$SCRIPT_DIR/mac-installer.sh"
         ;;
+
+    slackpkg)
+        MISSING=()
+
+        for package in "${SLACKWARE_BUNDLE[@]}"; do
+            if ! command -v "$package" &>/dev/null; then
+                MISSING+=("$package")
+            fi
+        done
+
+        if (( ${#MISSING[@]} > 0 )); then
+            sudo /usr/sbin/slackpkg update
+            sudo /usr/sbin/slackpkg \
+                -batch=on \
+                -default_answer=y \
+                install "${MISSING[@]}"
+        fi
+
+        if ! command -v fastfetch &>/dev/null; then
+            echo "Warning: Fastfetch must be installed separately on Slackware."
+        fi
+        ;;
+
     *)
         echo "Unsupported package manager: $PKG_MANAGER" >&2
         exit 1
+        ;;
+esac
+
+# Launch operating system-specific installer
+case "$OS" in
+    Linux)
+        bash "$SCRIPT_DIR/linux-installer.sh"
+        ;;
+    Darwin)
+        bash "$SCRIPT_DIR/mac-installer.sh"
         ;;
 esac
