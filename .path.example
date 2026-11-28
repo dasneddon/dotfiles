@@ -1,0 +1,12 @@
+# Machine-specific PATH configuration
+#
+# Copy this file to ~/.path and customize it locally.
+# Add one absolute directory path per line.
+#
+# Blank lines and comments are ignored.
+# Nonexistent directories and duplicate entries are skipped.
+# Do not use ~ or $HOME in directory paths.
+#
+# Examples:
+# /usr/local/go/bin
+# /opt/custom/bin

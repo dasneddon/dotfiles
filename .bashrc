@@ -69,9 +69,24 @@ plugins=(
 
 source "$OSH"/oh-my-bash.sh
 
-##Paths
-export PATH=$PATH:~/bin:~/.cargo/bin
-#User Binaries:Rust
+## Paths
+
+# Common user binary directories
+export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/.cargo/bin"
+
+# Machine-specific paths
+if [[ -r "$HOME/.path" ]]; then
+    while IFS= read -r dir || [[ -n "$dir" ]]; do
+        [[ -z "$dir" || "$dir" == \#* ]] && continue
+        [[ "$dir" == /* && -d "$dir" ]] || continue
+
+        case ":$PATH:" in
+            *":$dir:"*) ;;
+            *) export PATH="${PATH:+$PATH:}$dir" ;;
+        esac
+    done < "$HOME/.path"
+    unset dir
+fi
 
 ##Fastfetch
 command -v fastfetch >/dev/null 2>&1 && fastfetch
