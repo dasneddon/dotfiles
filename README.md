@@ -10,6 +10,13 @@ This repository provides a consistent terminal and development environment acros
 
 The project emphasizes Bash, Vim, traditional Unix utilities, portability, and reproducible system configuration.
 
+## v1.2.0 Release Notes
+
+- Added machine-specific PATH configuration through `~/.path`.
+- Included a commented `.path.example` template for local configuration.
+- Local PATH entries are appended without adding duplicate or nonexistent directories.
+- Machine-specific paths remain outside version control.
+
 ## v1.1.0 Release Notes
 
 - Added Slackware support using Slackpkg. The installer checks for `rsync`, `git`, `vim`, and `tmux` and installs only missing commands from that bundle.
@@ -32,6 +39,7 @@ The project emphasizes Bash, Vim, traditional Unix utilities, portability, and r
 - Automated configuration synchronization.
 - Git submodule management.
 - Platform-specific configuration handling.
+- Machine-specific PATH configuration.
 
 ## Supported Platforms
 
@@ -120,6 +128,7 @@ dotfiles/
 ├── .dircolors
 ├── .gitignore
 ├── .gitmodules
+├── .path.example
 ├── .profile
 ├── .vimrc
 ├── LICENSE
@@ -182,6 +191,31 @@ Features include:
 - Terminal color customization.
 - Standardized environment variables.
 - Fastfetch integration.
+
+### Machine-Specific PATH Configuration
+
+Each machine can extend its `PATH` independently without modifying the shared Bash configuration.
+
+Create a local configuration file if one does not already exist:
+
+```bash
+if [[ ! -e "$HOME/.path" && ! -L "$HOME/.path" ]]; then
+    cp ~/dotfiles/.path.example ~/.path
+fi
+vim ~/.path
+```
+
+Add one absolute directory path per line:
+
+```text
+# Machine-specific binary directories
+/usr/local/go/bin
+/opt/custom/bin
+```
+
+Blank lines, comments, nonexistent directories, and entries already in `PATH` are ignored. Use literal absolute paths; `~` and environment variables are not expanded.
+
+Open a new terminal session to load the paths. The local `~/.path` file is not tracked by Git. Only the example template is maintained in the repository.
 
 ### Oh My Bash
 
@@ -349,6 +383,8 @@ Deploy the updated configuration:
 ```
 
 Direct modifications to deployed configuration files may be overwritten during subsequent synchronization.
+
+Machine-specific PATH entries are an exception: edit `~/.path` directly on each machine rather than modifying the repository template.
 
 ## Selective Installation
 
